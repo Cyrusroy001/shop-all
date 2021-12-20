@@ -21,53 +21,67 @@ class ProductItem extends StatelessWidget {
       elevation: 5,
       child: ClipRRect(
         borderRadius: BorderRadius.circular(5),
-        child: 
-           GridTile(
-            child: GestureDetector(
-              //create route on the fly
-              onTap: () {
-                Navigator.of(context).pushNamed(
-                  ProductDetailScreen.routeName,
-                  arguments: providedProduct.id,
-                );
-              },
-              child: Image.network(
-                providedProduct.imageUrl,
-                fit: BoxFit.cover, //takes all the space available
-              ),
+        child: GridTile(
+          child: GestureDetector(
+            //create route on the fly
+            onTap: () {
+              Navigator.of(context).pushNamed(
+                ProductDetailScreen.routeName,
+                arguments: providedProduct.id,
+              );
+            },
+            child: Image.network(
+              providedProduct.imageUrl,
+              fit: BoxFit.cover, //takes all the space available
             ),
-            footer: GridTileBar(
-              backgroundColor: Colors.black87,
-              leading: Consumer<Product>(
-                builder: (ctx, product, _) => IconButton(
-                  icon: Icon(providedProduct.isFavorite
-                      ? Icons.favorite
-                      : Icons.favorite_border),
-                  color: Theme.of(context).accentColor,
-                  onPressed: () {
-                    providedProduct.toggleFav();
-                  },
-                ),
-              ),
-              title: Text(
-                providedProduct.title,
-                textAlign: TextAlign.center,
-              ),
-              trailing: IconButton(
-                icon: Icon(Icons.shopping_cart),
+          ),
+          footer: GridTileBar(
+            backgroundColor: Colors.black87,
+            leading: Consumer<Product>(
+              builder: (ctx, product, _) => IconButton(
+                icon: Icon(providedProduct.isFavorite
+                    ? Icons.favorite
+                    : Icons.favorite_border),
                 color: Theme.of(context).accentColor,
                 onPressed: () {
-                  providedCart.addItem(
-                    providedProduct.id,
-                    providedProduct.title,
-                    providedProduct.price,
-                  );
+                  providedProduct.toggleFav();
                 },
               ),
             ),
+            title: Text(
+              providedProduct.title,
+              textAlign: TextAlign.center,
+            ),
+            trailing: IconButton(
+              icon: Icon(Icons.shopping_cart),
+              color: Theme.of(context).accentColor,
+              onPressed: () {
+                providedCart.addItem(
+                  providedProduct.id,
+                  providedProduct.title,
+                  providedProduct.price,
+                );
+                ScaffoldMessenger.of(context).hideCurrentSnackBar();
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(
+                    content: Text(
+                      'Added item to cart!',
+                    ),
+                    duration: Duration(
+                      seconds: 1,
+                    ),
+                    action: SnackBarAction(
+                        label: 'UNDO',
+                        onPressed: () {
+                          providedCart.removeSingleItem(providedProduct.id);
+                        }),
+                  ),
+                );
+              },
+            ),
           ),
         ),
-      
+      ),
     );
   }
 }
