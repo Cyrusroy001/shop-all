@@ -4,6 +4,7 @@ import 'package:provider/provider.dart';
 import '../providers/cart_provider.dart'
     show CartProvider; //doesnt import CartItem to avoid nameclash
 import '../widgets/cart_item.dart' as ci;
+import '../providers/orders_provider.dart';
 
 class CartScreen extends StatelessWidget {
   static const routeName = '\cart-screen';
@@ -30,7 +31,7 @@ class CartScreen extends StatelessWidget {
                   Spacer(),
                   Chip(
                     label: Text(
-                      '\$${cart.totalAmount}',
+                      '\$${cart.totalAmount.toStringAsFixed(2)}',
                       style: TextStyle(
                         color: Colors.white,
                       ),
@@ -44,7 +45,18 @@ class CartScreen extends StatelessWidget {
                         color: Theme.of(context).accentColor,
                       ),
                     ),
-                    onPressed: () {},
+                    onPressed: () {
+                      if (cart.totalAmount != 0.0) {
+                        Provider.of<OrdersProvider>(
+                          context,
+                          listen: false,
+                        ).addOrder(
+                          cart.items.values.toList(),
+                          cart.totalAmount,
+                        );
+                        cart.clearCart();
+                      }
+                    },
                   ),
                 ],
               ),
